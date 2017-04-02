@@ -1,39 +1,130 @@
 //now what?
 //api:  http://www.ist.rit.edu/api/
-$(document).ready(function(){
-    myXhr('get',{path:'/about/'},'#about').done(function(json){
-        var x="<h2>"+json.title+"</h2>";
-        x+="<p>"+json.description+"</p>";
-        x+="<p>"+json.quote+"</p>";
-        x+="<p>"+json.quoteAuthor+"</p>";
-        $('#about').html(x);
-    });
 
+$(document).ready(function(){
+
+    loadDegrees();
+
+
+});
+
+
+/**
+ * Build a object which simplifies building an html element
+ * @returns html text
+ */
+function buildNode() {
+    var node = {
+        content: "",
+        // add a custom element with tag
+        add: function (input, tag, attributes) {
+            if(input !== undefined && tag !== undefined) {
+                if (attributes === undefined) {
+                    this.content += "<" + tag + ">" + input + "</" + tag + ">";
+                }
+                // allow for attributes to be added to an element
+                else {
+                    this.content += "<" + tag + " " + attributes + ">" + input + "</" + tag + ">";
+                }
+            }
+        },
+        // adds a paragraph element
+        addPar: function (line) {
+            if(input !== undefined) {
+                this.content += "<p>" + line + "</p>";
+            }
+        },
+        // add raw string
+        addRaw: function (line) {
+            if(line !== undefined) {
+                this.content += line;
+            }
+        },
+        // return the content
+        getHtml: function () {
+            return this.content;
+        }
+
+    };
+    return node;
+};
+
+
+function loadUndergrad() {
     myXhr('get',{path:'/degrees/undergraduate/'},'#content').done(function(json){
         //got good data back in json
         //dump out all of the degree titles
         $.each(json.undergraduate,function(i, item){
             console.log($(this));
             //console.log(item.degreeName);
-            $('#content').append('<h2>'+item.title+'</h2>'+'<p>'+item.description+'</p>');
+            var node = buildNode();
+            node.add(item.title,"h2");
+            node.addPar(item.description);
+            $('#content').html(node.getHtml());
         });
     });
+}
+
+function loadAbout() {
+    myXhr('get',{path:'/about/'},'#about').done(function(json){
+
+        var node = buildNode();
+        node.add(json.title,"h2");
+        node.addPar(json.description);
+        node.addPar(json.quote);
+        node.addPar(json.quoteAuthor);
+
+        $('#about').html(node.getHtml());
+
+    });
+}
+
+function loadPeople() {
     myXhr('get',{path:'/people/'},'#people').done(function(json){
         // do something...
-        var x='';
+        var node = buildNode();
         $.each(json.faculty,function(i, item){
             //item === this
             console.log(i);
             console.log(item);
             console.log($(this));
-            x+='<div onclick="getFac(this)" data-username="'+item.username+'">';
-            x+='<h2>'+item.name+'</h2><p>'+item.tagline+'</p>';
-            x+='<img src="'+item.imagePath+'"/></div>';
-        });
-        $('#people').html(x);
-    });
 
-});
+            node.addRaw( '<div onclick="getFac(this)" data-username="'+item.username+'">' );
+            node.addRaw( '<h2>'+item.name+'</h2><p>'+item.tagline+'</p>' );
+            node.addRaw( '<img src="'+item.imagePath+'"/></div>' );
+        });
+        $('#people').html(node.getHtml());
+    });
+}
+
+
+function loadDegrees() {
+    console.log("we are here");
+    myXhr('get',{path:'/degrees/'},'#degrees').done(function (json) {
+        var all_content = buildNode();
+
+        var undergrad = buildNode();
+        $.each(json.undergraduate,function(index,item) {
+            var concentrations = item.concentrations;
+            undergrad.add(item.title);
+            undergrad.add(item.degreeName,'p');
+            undergrad.add(item.description,'p');
+
+        });
+
+        var graduate = buildNode();
+        $.each(json.graduate, function (index, item) {
+            graduate.add(item.title,'p');
+            graduate.add(item.degreeName,'p');
+            graduate.add(item.description,'p');
+        });
+
+        all_content.addRaw( undergrad.getHtml() + graduate.getHtml());
+        $('#degrees').html(all_content.getHtml());
+    });
+}
+
+
 
 
 function getFac(dom){
