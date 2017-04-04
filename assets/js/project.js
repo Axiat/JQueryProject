@@ -3,8 +3,7 @@
 
 $(document).ready(function(){
 
-    loadDegrees();
-
+    loadEmployment();
 
 });
 
@@ -15,7 +14,10 @@ $(document).ready(function(){
  */
 function buildNode() {
     var node = {
+        // contents contais the formatted html of this node
         content: "",
+        // dict_of_lists is a dictionary which maps a array_name to a list.
+        dict_of_lists: {},
         // add a custom element with tag
         add: function (input, tag, attributes) {
             if(input !== undefined && tag !== undefined) {
@@ -40,6 +42,14 @@ function buildNode() {
                 this.content += line;
             }
         },
+        // create empty list and associate it with a list
+        createList: function (array_name) {
+            this.dict_of_lists[array_name] = [];
+        },
+        // add item to given lists name
+        addList: function (array_name,item) {
+            this.dict_of_lists[array_name].push(item);
+        },
         // return the content
         getHtml: function () {
             return this.content;
@@ -49,21 +59,6 @@ function buildNode() {
     return node;
 };
 
-
-function loadUndergrad() {
-    myXhr('get',{path:'/degrees/undergraduate/'},'#content').done(function(json){
-        //got good data back in json
-        //dump out all of the degree titles
-        $.each(json.undergraduate,function(i, item){
-            console.log($(this));
-            //console.log(item.degreeName);
-            var node = buildNode();
-            node.add(item.title,"h2");
-            node.addPar(item.description);
-            $('#content').html(node.getHtml());
-        });
-    });
-}
 
 function loadAbout() {
     myXhr('get',{path:'/about/'},'#about').done(function(json){
@@ -124,6 +119,73 @@ function loadDegrees() {
     });
 }
 
+
+function loadMinors() {
+    myXhr('get',{path:'/minors/'},"#minors").done(function (json) {
+        var minors = buildNode();
+        $.each(json.UgMinors,function (index, value) {
+            var courses = value.courses;
+            minors.add(value.name,'p');
+            minors.add(value.title,'p');
+            minors.add(value.description,'p');
+            minors.add(value.note,'p');
+            minors.add(courses.toString(),'p');
+        });
+
+        $('#minors').html(minors.getHtml());
+    });
+}
+
+function loadEmployment() {
+    myXhr('get',{path:'/employment/'},"#employment").done(function (json) {
+        var employement = buildNode();
+
+        console.log(json);
+
+        // get all fields
+        var introduction = json.introduction;
+        var careers      = json.careers;
+        var degreeStats  = json.degreeStatistics;
+        var coopTable    = json.coopTable;
+        var employers    = json.employers;
+        var employTable  = json.employmentTable;
+
+
+        // build introduction node;
+        var intro_div = buildNode();
+        intro_div.add(introduction.title);
+        $.each(introduction.content,function (index,value) {
+            intro_div.add(value.title,'h2');
+            intro_div.add(value.description,'p');
+        });
+
+        // build careers div
+        var careers_div = buildNode();
+        careers_div.add(careers.title);
+        $.each(careers.careerNames,function (index, value) {
+            careers_div.add(value,'p');
+        });
+
+        // build degreeStats
+        var stats_div = buildNode();
+        stats_div.add(degreeStats.title,'h2');
+        $.each(degreeStats.statistics,function (index, value) {
+            stats_div.add(value,'p');
+        });
+
+
+
+        // wrap and add child nodes
+        employement.add(intro_div.getHtml(),'div');
+        employement.add(careers_div.getHtml(),'div');
+
+        $('#employment').html(employement.getHtml());
+    });
+}
+
+
+
+//employment
 
 
 
