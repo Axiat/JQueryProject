@@ -53,7 +53,7 @@ function buildNode() {
         // add item to given lists name
         addToList: function (array_name,input,tag,attributes) {
             if(this.dict_of_lists[array_name] === undefined){
-                console.error("Array: " + array_name + " does not exist, create the list with the createList() function");
+                console.error("Array: \'" + array_name + "\' does not exist, create the list with the createList() function");
             }
             else{
                 // bare minimum, must be given input text and the name of the array to add to.
@@ -97,7 +97,7 @@ function buildNode() {
                         return list_node.getHtml();
                     }
                     else{
-                        console.error("Array: " + array_name + " does not exist, create the list with the createList() function");
+                        console.error("Array: \'" + array_name + "\' does not exist, create the list with the createList() function");
                     }
                 }
             }
@@ -119,7 +119,7 @@ function buildNode() {
             }
         },
         // a helper function to easily format a given input string to valid HTML
-        formatInput:  function (input, tag, attributes) {
+        format:  function (input, tag, attributes) {
             if(input !== undefined && tag !== undefined ) {
                 if( this.validateTag(tag) ){
                     if (attributes === undefined) {
@@ -131,7 +131,7 @@ function buildNode() {
                 }
             }
             else{
-                console.error('formatInput() function is missing either INPUT or TAG arguments');
+                console.error('format() function is missing either INPUT or TAG arguments');
             }
         },
         // add raw string

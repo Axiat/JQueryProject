@@ -3,10 +3,8 @@
 
 
     $(document).ready(function(){
+
         loadEmployment();
-
-
-
 
     });
 
@@ -88,9 +86,7 @@
 
     function loadEmployment() {
         myXhr('get',{path:'/employment/'},"#employment").done(function (json) {
-            var employement = buildNode();
-
-            console.log(json);
+            var employment = buildNode();
 
             // get all fields
             var introduction = json.introduction;
@@ -100,47 +96,100 @@
             var employers    = json.employers;
             var employTable  = json.employmentTable;
 
-
+            /////////////////////////////////////////////////////////////////////////
             // build introduction node;
             var intro_div = buildNode();
             intro_div.add(introduction.title,'h2');
+
             $.each(introduction.content,function (index,value) {
                 intro_div.add(value.title,'h2');
                 intro_div.add(value.description,'p');
             });
-
+            /////////////////////////////////////////////////////////////////////////
             // build careers div
             var careers_div = buildNode();
             careers_div.add(careers.title,'h2');
+
             $.each(careers.careerNames,function (index, value) {
                 careers_div.add(value,'p');
             });
-
+            /////////////////////////////////////////////////////////////////////////
             // build degreeStats div
             var stats_div = buildNode();
-            var list_name = 'stats';
-            stats_div.createList(list_name);
+            stats_div.createList('stats');
             stats_div.add(degreeStats.title,'h2');
-            $.each(degreeStats.statistics,function (index, value) {
-                stats_div.addToList(list_name,
-                    stats_div.formatInput(value.description,'p') +
-                    stats_div.formatInput(value.value,'p'),
-                    'li');
-            });
-            stats_div.add(stats_div.listToHtml(list_name,'ul'),'div');
 
+            $.each(degreeStats.statistics,function (index, value) {
+                stats_div.addToList('stats',
+                    stats_div.format(value.description,'p')
+                  + stats_div.format(value.value,'p')
+                  ,'li');
+            });
+            stats_div.add(stats_div.listToHtml('stats','ul'),'div');
+
+            /////////////////////////////////////////////////////////////////////////
             // build employers div
             var employers_div = buildNode();
+            employers_div.add(employers.title,'h2');
+            employers_div.createList('employers');
 
+            $.each(employers.employerNames,function (index, value) {
+              employers_div.addToList('employers', value,'li');
+            });
+            employers_div.add( employers_div.listToHtml('employers','ul'), 'div' );
 
+            /////////////////////////////////////////////////////////////////////////
+            // build Co-op Table
+            var coop_div = buildNode();
+            coop_div.createList('co-ops');
+            coop_div.add(coopTable.title,'h2');
+
+            var coop_array  = coopTable.coopInformation;
+            var coop_length = coop_array.length;
+
+            for( var i = 0; i < coop_length; i++ ){
+                var object = coop_array[i];
+                coop_div.addToList('co-ops',
+                      coop_div.format(object.city,'p')
+                    + coop_div.format(object.degree,'p')
+                    + coop_div.format(object.employer,'p')
+                    + coop_div.format(object.term,'p')
+                    ,'li');
+            }
+            coop_div.add( coop_div.listToHtml('co-ops','ul'), 'div' );
+
+            /////////////////////////////////////////////////////////////////////////
+            // build employment table
+            var employ_table = buildNode();
+            employ_table.createList('table');
+            employ_table.add(employTable.title,'h2');
+
+            var employ_array  = employTable.professionalEmploymentInformation;
+            var employ_length = employ_array.length;
+
+            for( var i = 0; i < employ_length; i++ ){
+                var object = employ_array[i];
+                employ_table.addToList('table',
+                      employ_table.format(object.title,'p')
+                    + employ_table.format(object.city,'p')
+                    + employ_table.format(object.degree,'p')
+                    + employ_table.format(object.employer,'p')
+                    + employ_table.format(object.startDate,'p')
+                    ,'li');
+            }
+            employ_table.add( employ_table.listToHtml('table','ul'), 'div' );
+            /////////////////////////////////////////////////////////////////////////
 
 
             // wrap and add child nodes
-            employement.add(intro_div.getHtml(),'div');
-            employement.add(careers_div.getHtml(),'div');
-            employement.add(stats_div.getHtml(),'div');
+            employment.add(intro_div.getHtml(),'div');
+            employment.add(careers_div.getHtml(),'div');
+            employment.add(stats_div.getHtml(),'div');
+            employment.add(employers_div.getHtml(),'div');
+            // employment.add(coop_div.getHtml(),'div');
+            // employment.add(employ_table.getHtml(),'div');
 
-            $('#employment').html(employement.getHtml());
+            $('#employment').html(employment.getHtml());
         });
     }
 
