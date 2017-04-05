@@ -3,8 +3,6 @@
 
 $(document).ready(function(){
 
-    loadEmployment();
-
 });
 
 
@@ -13,12 +11,12 @@ $(document).ready(function(){
  * @returns html text
  */
 function buildNode() {
-    var node = {
+    return {
         // contents contais the formatted html of this node
         content: "",
         // dict_of_lists is a dictionary which maps a array_name to a list.
         dict_of_lists: {},
-        // add a custom element with tag
+        // add a custom element with tag, by default content is added to the end
         add: function (input, tag, attributes) {
             if(input !== undefined && tag !== undefined) {
                 if (attributes === undefined) {
@@ -30,10 +28,74 @@ function buildNode() {
                 }
             }
         },
-        // adds a paragraph element
-        addPar: function (line) {
-            if(input !== undefined) {
-                this.content += "<p>" + line + "</p>";
+        // add a custom element with tag in front of the other content
+        addToFront: function (input, tag, attributes) {
+            if(input !== undefined && tag !== undefined) {
+                if (attributes === undefined) {
+                    this.content = "<" + tag + ">" + input + "</" + tag + ">" + this.content;
+                }
+                // allow for attributes to be added to an element
+                else {
+                    this.content = "<" + tag + " " + attributes + ">" + input + "</" + tag + ">" + this.content;
+                }
+            }
+        },
+        // create empty list and associate it with a list
+        createList: function (array_name) {
+            this.dict_of_lists[array_name] = [];
+        },
+        // add item to given lists name
+        addToList: function (array_name,input,tag,attributes) {
+            if(this.dict_of_lists[array_name] === undefined){
+                console.log("Array: " + array_name + " does not exist, create the list with the createList() function");
+            }
+            else{
+                // bare minimum, must be given input text and the name of the array to add to.
+                if(input !== undefined && array_name !== undefined){
+                    // case 1: no attributes, just a tag
+                    if(attributes === undefined && tag !== undefined) {
+                        this.dict_of_lists[array_name].push( "<" + tag + ">" + input + "</" + tag + ">");
+                    }
+                    // case 2: no attributes, no tag
+                    else if(attributes === undefined && tag === undefined){
+                        this.dict_of_lists[array_name].push(  input  );
+                    }
+                    // case 3: attributes and tag are included
+                    else{
+                        this.dict_of_lists[array_name].push( "<" + tag + " " + attributes + ">" + input + "</" + tag + ">" );
+                    }
+                }
+            }
+
+        },
+        // grab the array and convert the array to a valid html list and return that html
+        listToHtml: function (array_name,tag,attributes) {
+            var array  = this.dict_of_lists[array_name];
+            if(array !== undefined){
+                var length = array.length;
+                var list_node = buildNode();
+
+                for(var i = 0; i < length; i++){
+                    // we assume the optional tags and attributes are already included
+                    list_node.addRaw(array[i]);
+                }
+                list_node.wrapContent(tag,attributes);
+                return list_node.getHtml();
+            }
+            else{
+                console.log("Array: " + array_name + " does not exist, create the list with the createList() function");
+            }
+
+        },
+        // wrap current content with a given tag and optional attributes
+        wrapContent: function (tag,attributes) {
+            if( tag !== undefined) {
+                if (attributes === undefined) {
+                    this.content = "<" + tag + ">" + this.content + "</" + tag + ">";
+                }
+                else {
+                    this.content = "<" + tag + " " + attributes + ">" + this.content + "</" + tag + ">";
+                }
             }
         },
         // add raw string
@@ -42,22 +104,19 @@ function buildNode() {
                 this.content += line;
             }
         },
-        // create empty list and associate it with a list
-        createList: function (array_name) {
-            this.dict_of_lists[array_name] = [];
-        },
-        // add item to given lists name
-        addList: function (array_name,item) {
-            this.dict_of_lists[array_name].push(item);
+        // add raw string to the front of the content
+        addRawToFront: function (line) {
+            if(line !== undefined) {
+                this.content = line + this.content;
+            }
         },
         // return the content
         getHtml: function () {
             return this.content;
         }
-
     };
-    return node;
-};
+
+}
 
 
 function loadAbout() {
@@ -65,9 +124,9 @@ function loadAbout() {
 
         var node = buildNode();
         node.add(json.title,"h2");
-        node.addPar(json.description);
-        node.addPar(json.quote);
-        node.addPar(json.quoteAuthor);
+        node.add(json.description,'p');
+        node.add(json.quote,'p');
+        node.add(json.quoteAuthor,'p');
 
         $('#about').html(node.getHtml());
 
