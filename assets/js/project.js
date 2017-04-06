@@ -100,7 +100,6 @@
             // build introduction node;
             var intro_div = buildNode();
             intro_div.add(introduction.title,'h2');
-
             $.each(introduction.content,function (index,value) {
                 intro_div.add(value.title,'h2');
                 intro_div.add(value.description,'p');
@@ -110,7 +109,6 @@
             // build careers div
             var careers_div = buildNode();
             careers_div.add(careers.title,'h2');
-
             $.each(careers.careerNames,function (index, value) {
                 careers_div.add(value,'p');
             });
@@ -120,7 +118,6 @@
             var stats_div = buildNode();
             stats_div.createList('stats');
             stats_div.add(degreeStats.title,'h2');
-
             $.each(degreeStats.statistics,function (index, value) {
                 stats_div.addToList('stats',
                     stats_div.format(value.description,'p')
@@ -135,7 +132,6 @@
             var employers_div = buildNode();
             employers_div.add(employers.title,'h2');
             employers_div.createList('employers');
-
             $.each(employers.employerNames,function (index, value) {
               employers_div.addToList('employers', value,'li');
             });
@@ -188,7 +184,7 @@
             employment.add(careers_div.getHtml(),'div');
             employment.add(stats_div.getHtml(),'div');
             employment.add(employers_div.getHtml(),'div');
-            // employment.add(coop_div.getHtml(),'div');
+            // employment.add(coop_div.getHtml(),'div');    // these two statements, load a LOT of html objects
             // employment.add(employ_table.getHtml(),'div');
 
             $('#employment').html(employment.getHtml());
