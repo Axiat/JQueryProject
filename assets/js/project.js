@@ -4,7 +4,8 @@
 
     $(document).ready(function(){
 
-        loadResearch();
+        loadResources();
+
     });
 
 
@@ -95,7 +96,7 @@
             var employers    = json.employers;
             var employTable  = json.employmentTable;
 
-            /////////////////////////////////////////////////////////////////////////
+
             // build introduction node;
             var intro_div = buildNode();
             intro_div.add(introduction.title,'h2');
@@ -104,7 +105,8 @@
                 intro_div.add(value.title,'h2');
                 intro_div.add(value.description,'p');
             });
-            /////////////////////////////////////////////////////////////////////////
+
+
             // build careers div
             var careers_div = buildNode();
             careers_div.add(careers.title,'h2');
@@ -112,7 +114,8 @@
             $.each(careers.careerNames,function (index, value) {
                 careers_div.add(value,'p');
             });
-            /////////////////////////////////////////////////////////////////////////
+
+
             // build degreeStats div
             var stats_div = buildNode();
             stats_div.createList('stats');
@@ -126,7 +129,8 @@
             });
             stats_div.add(stats_div.listToHtml('stats','ul'),'div');
 
-            /////////////////////////////////////////////////////////////////////////
+
+
             // build employers div
             var employers_div = buildNode();
             employers_div.add(employers.title,'h2');
@@ -137,7 +141,7 @@
             });
             employers_div.add( employers_div.listToHtml('employers','ul'), 'div' );
 
-            /////////////////////////////////////////////////////////////////////////
+
             // build Co-op Table
             var coop_div = buildNode();
             coop_div.createList('co-ops');
@@ -157,7 +161,7 @@
             }
             coop_div.add( coop_div.listToHtml('co-ops','ul'), 'div' );
 
-            /////////////////////////////////////////////////////////////////////////
+
             // build employment table
             var employ_table = buildNode();
             employ_table.createList('table');
@@ -177,7 +181,6 @@
                     ,'li');
             }
             employ_table.add( employ_table.listToHtml('table','ul'), 'div' );
-            /////////////////////////////////////////////////////////////////////////
 
 
             // wrap and add child nodes
@@ -218,8 +221,6 @@
 
                 // add citations
                 research_div.add( research_div.listToHtml(c_faculty,'ul') , 'div');
-
-
             });
 
 
@@ -237,12 +238,62 @@
                 research_div.add( research_div.listToHtml(c_intrest,'ul') , 'div');
             });
 
-
-
+            // add research_div content to the page
             $('#research').html(research_div.getHtml());
         });
 
 
+    }
+
+
+    function loadResources() {
+        myXhr('get', {path: '/resources/'}, "#resources").done(function (json) {
+
+            console.log(json);
+
+            // get all objects
+            var title       = json.title;
+            var sub_title   = json.subTitle;
+            var tutors      = json.tutorsAndLabInformation;
+            var abroad      = json.studyAbroad;
+            var services    = json.studentServices;
+            var ambassadors = json.studentAmbassadors;
+            var forms       = json.forms;
+            var coops       = json.coopEnrollment;
+
+            // build root node
+            var resources = buildNode();
+
+            // student resources title
+            resources.add(title,'h1');
+            resources.add(sub_title,'h2');
+
+            // tutoring information
+            resources.add(tutors.title,'p');
+            resources.add(tutors.description,'p');
+            resources.add(tutors.tutoringLabHoursLink,'p');
+
+            // study abroad section
+            resources.add(abroad.title,'p');
+            resources.add(abroad.description,'p');
+
+            var places_list = 'places';
+            resources.createList(places_list);
+            $.each(abroad.places,function (index, value) {
+                resources.addToList(places_list,
+                      resources.format(value.nameOfPlace,'p')
+                    + resources.format(value.description,'p')
+                    , 'li');
+            });
+            // add places list to resources
+            resources.add( resources.listToHtml(places_list,'ul'), 'div');
+
+
+
+
+
+            $('#resources').html(resources.getHtml());
+        });
     }
 
 
