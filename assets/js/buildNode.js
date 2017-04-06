@@ -48,7 +48,12 @@ function buildNode() {
         },
         // create empty list and associate it with a list
         createList: function (array_name) {
-            this.dict_of_lists[array_name] = [];
+            if(this.dict_of_lists[ array_name ] === undefined ) {
+                this.dict_of_lists[ array_name ] = [];
+            }
+            else{
+                console.error('Array: ' + array_name + ' already exists, try another name!');
+            }
         },
         // add item to given lists name
         addToList: function (array_name,input,tag,attributes) {

@@ -285,7 +285,109 @@
             resources.add( resources.listToHtml(places_list,'ul'), 'div');
 
 
+            // student services section
+            resources.add(services.title,'h2');
+            var aca_advisors = services.academicAdvisors;
+            var fac_advisors = services.facultyAdvisors;
+            var ist_advisors = services.istMinorAdvising;
+            var pro_advisors = services.professonalAdvisors;
 
+            resources.add(aca_advisors.title,'p');
+            resources.add(aca_advisors.description,'p');
+
+            resources.add('FAQ','h2');
+            resources.add(aca_advisors.faq.title,'p');
+            resources.add(aca_advisors.faq.contentHref,'a','href="' + aca_advisors.faq.contentHref + '"');
+
+            resources.add(fac_advisors.title,'h2');
+            resources.add(fac_advisors.description,'p');
+
+            var adv_list = 'advisors';
+            resources.createList(adv_list);
+            resources.add(ist_advisors.title,'h2');
+            $.each(ist_advisors.minorAdvisorInformation,function (index, value) {
+                resources.addToList(adv_list,
+                      resources.format(value.title,'p')
+                    + resources.format(value.advisor,'p')
+                    + resources.format(value.email,'p')
+                    , 'li');
+            });
+            resources.add( resources.listToHtml(adv_list,'ul'), 'div' );
+
+            var pro_list = 'pro';
+            resources.createList(pro_list);
+            resources.add(pro_advisors.title,'h2');
+            $.each(pro_advisors.advisorInformation,function (index, value) {
+                resources.addToList(pro_list,
+                      resources.format(value.name,'p')
+                    + resources.format(value.department,'p')
+                    + resources.format(value.email,'p')
+                    , 'li');
+            });
+            resources.add( resources.listToHtml(pro_list,'ul'), 'div' );
+
+
+            // student ambassador section
+            resources.add(ambassadors.title,'h2');
+            resources.add('','img','src="' + ambassadors.ambassadorsImageSource + '"');
+
+            var amb_list = 'amb_list';
+            resources.createList(amb_list);
+            $.each(ambassadors.subSectionContent,function (index, value) {
+                resources.addToList(amb_list,
+                      resources.format(value.title,'p')
+                    + resources.format(value.description,'p')
+                    , 'li');
+            });
+            resources.add( resources.listToHtml(amb_list,'ul'), 'div' );
+
+            resources.add('RIT ambassador application','h3');
+            resources.add(ambassadors.applicationFormLink,'a', 'href="' + ambassadors.applicationFormLink + '"' );
+            resources.add('Contact','h3');
+            resources.add(ambassadors.note,'p');
+
+
+
+            // forms section
+            resources.add('Forms','h3');
+            var grad_list  = 'graduate';
+            var ugrad_list = 'undergrad';
+
+            resources.add('Graduate','h3');
+            resources.createList(grad_list);
+            $.each(forms.graduateForms,function (index, value) {
+                resources.addToList(grad_list,
+                      resources.format(value.formName,'p')
+                    + resources.format(value.href,'a','href="' + value.href + '"')
+                    , 'li');
+            });
+            resources.add( resources.listToHtml(grad_list,'ul'), 'div' );
+
+            resources.add('Undergrad','h3');
+            resources.createList(ugrad_list);
+            $.each(forms.undergraduateForms,function (index, value) {
+                resources.addToList(ugrad_list,
+                      resources.format(value.formName,'p')
+                    + resources.format(value.href,'a','href="' + value.href + '"')
+                    , 'li');
+            });
+            resources.add( resources.listToHtml(ugrad_list,'ul'), 'div' );
+
+
+            // coop section
+
+            resources.add(coops.title,'h2');
+            resources.add('RIT Job Zone','a','href="' + coops.RITJobZoneGuidelink + '"');
+
+            var enroll_list = 'enroll';
+            resources.createList(enroll_list);
+            $.each(coops.enrollmentInformationContent,function (index, value) {
+                resources.addToList(enroll_list,
+                      resources.format(value.title,'p')
+                    + resources.format(value.description,'p')
+                    , 'li');
+            });
+            resources.add( resources.listToHtml(enroll_list,'ul'), 'div' );
 
 
             $('#resources').html(resources.getHtml());
