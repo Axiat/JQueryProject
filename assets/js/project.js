@@ -4,8 +4,7 @@
 
     $(document).ready(function(){
 
-        loadEmployment();
-
+        loadResearch();
     });
 
 
@@ -193,9 +192,61 @@
         });
     }
 
+    function loadResearch() {
+        myXhr('get',{path:'/research/'},"#research").done(function (json) {
+
+            var byFaculty = json.byFaculty;
+            var c_faculty = 'citations';
+
+            var byIntrest = json.byInterestArea;
+            var c_intrest = 'intrest_citations';
+
+            var research_div = buildNode();
+
+            // add up the byFacutly section
+            $.each(byFaculty,function (index, value) {
+
+                // add faculty's name and username
+                research_div.add(value.facultyName,'b');
+                research_div.add(value.username,'p');
+
+                // add up citations
+                research_div.createList(c_faculty);
+                $.each(value.citations,function (index, value) {
+                    research_div.addToList(c_faculty, research_div.format(value,'p'),'li');
+                });
+
+                // add citations
+                research_div.add( research_div.listToHtml(c_faculty,'ul') , 'div');
 
 
-//employment
+            });
+
+
+            // add up the byIntrestArea section
+            $.each(byIntrest,function (index, value) {
+                research_div.add(value.areaName,'p');
+
+                // add up citations
+                research_div.createList(c_intrest);
+                $.each(value.citations,function (index, value) {
+                    research_div.addToList( c_intrest, research_div.format(value,'p') , 'li' );
+                });
+
+                // add citations
+                research_div.add( research_div.listToHtml(c_intrest,'ul') , 'div');
+            });
+
+
+
+            $('#research').html(research_div.getHtml());
+        });
+
+
+    }
+
+
+
 
 
 
