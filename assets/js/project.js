@@ -4,7 +4,7 @@
 
     $(document).ready(function(){
 
-        loadResources();
+        loadNews();
 
     });
 
@@ -395,6 +395,57 @@
     }
 
 
+    function loadNews() {
+        myXhr('get', {path: '/news/'}, "#news").done(function (json) {
+
+            console.log(json);
+
+            // getting the values
+            var older_array     = json.older;
+            var quarter_array   = json.quarter;
+            var year_array      = json.year;
+
+            // naming the lists
+            var old_list     = 'old';
+            var quarter_list = 'quarter';
+            var year_list    = 'year';
+
+            var news = buildNode();
+
+            news.createList(old_list);
+            $.each(older_array,function (index, value) {
+                news.addToList(old_list,
+                    news.format(value.title,'p')
+                  + news.format(value.date,'p')
+                  + news.format(value.description,'p')
+                  ,'li');
+            });
+            news.add( news.listToHtml(old_list,'ul'), 'div' );
+
+            news.createList(quarter_list);
+            $.each(quarter_array,function (index, value) {
+                news.addToList(quarter_list,
+                      news.format(value.title,'p')
+                    + news.format(value.date,'p')
+                    + news.format(value.description,'p')
+                    ,'li');
+            });
+            news.add( news.listToHtml(quarter_list,'ul'), 'div' );
+
+            news.createList(year_list);
+            $.each(year_array,function (index, value) {
+                news.addToList(year_list,
+                      news.format(value.title,'p')
+                    + news.format(value.date,'p')
+                    + news.format(value.description,'p')
+                    ,'li');
+            });
+            news.add( news.listToHtml(year_list,'ul'), 'div' );
+
+
+            $('#news').html(news.getHtml());
+        });
+    }
 
 
 

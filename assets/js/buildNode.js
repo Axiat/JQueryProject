@@ -16,7 +16,7 @@ function buildNode() {
         // add a custom element with tag, by default content is added to the end
         add: function (input, tag, attributes) {
             if( input !== undefined && tag !== undefined ) {
-                if( this.validateTag(tag) ){
+                if( this.nullCheck(input) && this.validateTag(tag) ){
                     if ( attributes === undefined ) {
                         this.content += "<" + tag + ">" + input + "</" + tag + ">";
                     }
@@ -32,7 +32,7 @@ function buildNode() {
         // add a custom element with tag in front of the other content
         addToFront: function (input, tag, attributes) {
             if( input !== undefined && tag !== undefined ) {
-                if( this.validateTag(tag) ){
+                if( this.nullCheck(input)&& this.validateTag(tag) ){
                     if ( attributes === undefined ) {
                         this.content = "<" + tag + ">" + input + "</" + tag + ">" + this.content;
                     }
@@ -62,9 +62,9 @@ function buildNode() {
             }
             else{
                 // bare minimum, must be given input text and the name of the array to add to.
-                if( input !== undefined && array_name !== undefined ){
+                if( array_name !== undefined && this.nullCheck(input)){
                     // case 1: no attributes, just a tag
-                    if( attributes === undefined && tag !== undefined && this.validateTag(tag) ) {
+                    if( attributes === undefined && tag !== undefined  && this.validateTag(tag) ) {
                         this.dict_of_lists[array_name].push( "<" + tag + ">" + input + "</" + tag + ">");
                     }
                     // case 2: no attributes, no tag
@@ -88,7 +88,7 @@ function buildNode() {
                 console.error('listToHtml() is missing TAG argument');
             }
             else{
-                if( this.validateTag(tag) ){
+                if(array_name !== null && this.validateTag(tag) ){
                     var array  = this.dict_of_lists[array_name];
                     if(array !== undefined){
                         var length = array.length;
@@ -110,7 +110,7 @@ function buildNode() {
         // wrap current content with a given tag and optional attributes
         wrapContent: function (tag,attributes) {
             if( tag !== undefined ) {
-                if( this.validateTag(tag) ){
+                if( tag !== null && this.validateTag(tag) ){
                     if (attributes === undefined) {
                         this.content = "<" + tag + ">" + this.content + "</" + tag + ">";
                     }
@@ -126,13 +126,19 @@ function buildNode() {
         // a helper function to easily format a given input string to valid HTML
         format:  function (input, tag, attributes) {
             if(input !== undefined && tag !== undefined ) {
-                if( this.validateTag(tag) ){
+                if( this.nullCheck(input) && this.validateTag(tag) ){
                     if (attributes === undefined) {
+                        if(input === "undefined"){
+                            console.log('found it!');
+                        }
                         return "<" + tag + ">" + input + "</" + tag + ">";
                     }
                     else {
                         return "<" + tag + " " + attributes + ">" + input + "</" + tag + ">";
                     }
+                }
+                else{
+                    return ''; // return empty string instead of input, which is returned by default apparently
                 }
             }
             else{
@@ -171,6 +177,10 @@ function buildNode() {
                 }
             }
             return isValid;
+        },
+        // internal function which helps determine 'null' or 'undefined' inputs
+        nullCheck: function (input) {
+          return input !== undefined && input !== null && input !== "undefined" && input !== "null";
         },
         // return the content
         getHtml: function () {
