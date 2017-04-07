@@ -3,8 +3,7 @@
 
 
     $(document).ready(function(){
-
-        loadNews();
+        loadDegrees();
 
     });
 
@@ -28,11 +27,6 @@
             // do something...
             var node = buildNode();
             $.each(json.faculty,function(i, item){
-                //item === this
-                console.log(i);
-                console.log(item);
-                console.log($(this));
-
                 node.addRaw( '<div onclick="getFac(this)" data-username="'+item.username+'">' );
                 node.addRaw( '<h2>'+item.name+'</h2><p>'+item.tagline+'</p>' );
                 node.addRaw( '<img src="'+item.imagePath+'"/></div>' );
@@ -44,26 +38,61 @@
 
     function loadDegrees() {
         myXhr('get',{path:'/degrees/'},'#degrees').done(function (json) {
-            var all_content = buildNode();
+            console.log(json);
+            var grad  = json.graduate;
+            var under = json.undergraduate;
 
-            var undergrad = buildNode();
-            $.each(json.undergraduate,function(index,item) {
-                var concentrations = item.concentrations;
-                undergrad.add(item.title);
-                undergrad.add(item.degreeName,'p');
-                undergrad.add(item.description,'p');
+            var g_list = 'grad';
+            var u_list = 'under';
+
+            var degrees = buildNode();
+
+            // this list is reused between both lists
+            var focuses  = 'concentrations';
+            degrees.createList(focuses);
+
+            // build graduate section
+            degrees.add('Graduate:','h1');
+            degrees.createList(g_list);
+            $.each(grad, function(index, value) {
+
+                degrees.resetList(focuses);
+                $.each(value.concentrations,function (index, value) {
+                    degrees.addToList(focuses, degrees.format(value,'p'),'li');
+                });
+
+                degrees.addToList(g_list,
+                      degrees.format(value.title,'p')
+                    + degrees.format(value.degreeName,'p')
+                    + degrees.format(value.description,'p')
+                    + degrees.listToHtml(focuses,'ul')
+                    ,'li');
+            });
+            degrees.add( degrees.listToHtml(g_list,'ul'), 'div');
+
+            // undergraduate section
+            degrees.add('Undergraduate:','h1');
+            degrees.createList(u_list);
+            $.each(under, function(index, value) {
+
+                degrees.resetList(focuses);
+                $.each(value.concentrations,function (index, value) {
+                    degrees.addToList(focuses, degrees.format(value,'p'),'li');
+                });
+
+                degrees.addToList(u_list,
+                    degrees.format(value.title,'p')
+                    + degrees.format(value.degreeName,'p')
+                    + degrees.format(value.description,'p')
+                    + degrees.listToHtml(focuses,'ul')
+                    ,'li');
 
             });
+            degrees.add( degrees.listToHtml(u_list,'ul'), 'div');
 
-            var graduate = buildNode();
-            $.each(json.graduate, function (index, item) {
-                graduate.add(item.title,'p');
-                graduate.add(item.degreeName,'p');
-                graduate.add(item.description,'p');
-            });
 
-            all_content.addRaw( undergrad.getHtml() + graduate.getHtml());
-            $('#degrees').html(all_content.getHtml());
+
+            $('#degrees').html(degrees.getHtml());
         });
     }
 
@@ -71,13 +100,24 @@
     function loadMinors() {
         myXhr('get',{path:'/minors/'},"#minors").done(function (json) {
             var minors = buildNode();
+            var course_list = 'courses';
+
+            minors.createList(course_list);
             $.each(json.UgMinors,function (index, value) {
                 var courses = value.courses;
                 minors.add(value.name,'p');
                 minors.add(value.title,'p');
                 minors.add(value.description,'p');
                 minors.add(value.note,'p');
-                minors.add(courses.toString(),'p');
+
+                // add up courses
+                minors.resetList(course_list);
+                $.each(courses,function (index, value) {
+                   minors.addToList(course_list,value,'li')
+                });
+                minors.add( minors.listToHtml(course_list,'ul'), 'div');
+
+
             });
 
             $('#minors').html(minors.getHtml());
@@ -201,7 +241,7 @@
             var c_intrest = 'intrest_citations';
 
             var research_div = buildNode();
-
+            research_div.createList(c_faculty);
             // add up the byFacutly section
             $.each(byFaculty,function (index, value) {
 
@@ -210,7 +250,7 @@
                 research_div.add(value.username,'p');
 
                 // add up citations
-                research_div.createList(c_faculty);
+                research_div.resetList(c_faculty);
                 $.each(value.citations,function (index, value) {
                     research_div.addToList(c_faculty, research_div.format(value,'p'),'li');
                 });
@@ -221,11 +261,12 @@
 
 
             // add up the byIntrestArea section
+            research_div.createList(c_intrest);
             $.each(byIntrest,function (index, value) {
                 research_div.add(value.areaName,'p');
 
                 // add up citations
-                research_div.createList(c_intrest);
+                research_div.resetList(c_intrest);
                 $.each(value.citations,function (index, value) {
                     research_div.addToList( c_intrest, research_div.format(value,'p') , 'li' );
                 });
@@ -447,7 +488,59 @@
         });
     }
 
+    function loadFooter() {
+        myXhr('get', {path: '/footer/'}, "#footer").done(function (json) {
+            console.log(json);
 
+            var copyright = json.copyright;
+            var links     = json.quickLinks;
+            var social    = json.social;
+
+            var footer = buildNode();
+            var social_list = 'social';
+
+            // copyright
+            footer.add(copyright.title,'h2');
+            footer.addRaw(copyright.html);
+
+            // quick links
+            footer.createList(social_list);
+            $.each(links,function (index, value) {
+                footer.addToList(social_list,
+                      footer.format(value.title,'p')
+                    + footer.format(value.href,'a','href="' + value.href + '"')
+                    ,'li');
+            });
+            footer.add( footer.listToHtml(social_list,'ul'), 'div' );
+
+            // social
+            footer.add(social.title,'p');
+            footer.add(social.by,'p');
+            footer.add('Facebook','a','href="' + social.facebook + '"');
+            footer.add('','br');
+            footer.add('Twitter','a','href="' + social.twitter + '"');
+            footer.add(social.tweet,'p');
+
+            $('#footer').html(footer.getHtml());
+        });
+    }
+    
+    function loadCourse(id) {
+        myXhr('get', {path: '/course/courseID=' + id}, "#footer").done(function (json) {
+            var course = buildNode();
+            course.add(json.title,'h2');
+            course.add(json.description,'p');
+
+            $('#course').html(course.getHtml());
+        });
+    }
+
+
+    function loadMap() {
+        myHTMLxhr('get', {path: '/map/'}, "#map").done(function (html) {
+            $('#map').html(html);
+        });
+    }
 
 
     function getFac(dom){
@@ -481,6 +574,28 @@
         });
     }
 
+
+function myHTMLxhr(t, d, id){
+    return $.ajax({
+        type:t,
+        url:'proxy.php',
+        dataType:'html',
+        data:d,
+        cache:false,
+        async:true,
+        beforeSend:function(){
+            //PLEASE - get your own spinner that 'fits' your site.
+            $(id).append('<img src="gears.gif" class="spin"/>');
+        }
+    }).always(function(){
+        //kill spinner
+        $(id).find('.spin').fadeOut(5000,function(){
+            $(this).remove();
+        });
+    }).fail(function(){
+        //handle failure
+    });
+}
 
 
 

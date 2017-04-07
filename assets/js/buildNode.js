@@ -55,6 +55,15 @@ function buildNode() {
                 console.error('Array: ' + array_name + ' already exists, try another name!');
             }
         },
+        // given the name of an array, reset the list
+        resetList: function (array_name) {
+            if(this.dict_of_lists[ array_name ] !== undefined ) {
+                this.dict_of_lists[ array_name ] = [];
+            }
+            else{
+                console.error('Array: ' + array_name + ' doesn\'t exists, can\'t reset a list that doesn\'t exist ');
+            }
+        },
         // add item to given lists name
         addToList: function (array_name,input,tag,attributes) {
             if(this.dict_of_lists[array_name] === undefined){
@@ -124,13 +133,11 @@ function buildNode() {
             }
         },
         // a helper function to easily format a given input string to valid HTML
+        // - if you attempt to add a undefined input, nothing happens.
         format:  function (input, tag, attributes) {
-            if(input !== undefined && tag !== undefined ) {
+            if(tag !== undefined ) {
                 if( this.nullCheck(input) && this.validateTag(tag) ){
                     if (attributes === undefined) {
-                        if(input === "undefined"){
-                            console.log('found it!');
-                        }
                         return "<" + tag + ">" + input + "</" + tag + ">";
                     }
                     else {
@@ -138,11 +145,11 @@ function buildNode() {
                     }
                 }
                 else{
-                    return ''; // return empty string instead of input, which is returned by default apparently
+                    return ''; // return empty string if input is empty or undefined
                 }
             }
             else{
-                console.error('format() function is missing either INPUT or TAG arguments');
+                console.error('format() function is missing TAG argument');
             }
         },
         // add raw string
