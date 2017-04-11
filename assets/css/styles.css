@@ -1,0 +1,26 @@
+                                    /*       top level html  css          */
+
+
+main {
+    min-width: 800px;
+    max-width: 960px;
+    width: 50%;
+    margin: auto;
+
+}
+section {
+    border: 1px solid black;
+    margin-bottom: 20px;
+}
+
+
+
+                                        /*       About content css          */
+#about .quote {
+    width: 100%;
+    width: 70%;
+    margin: auto;
+}
+#about #author {
+    color: orange;
+}

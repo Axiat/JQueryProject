@@ -3,7 +3,17 @@
 
 
     $(document).ready(function(){
+
+        loadAbout();
         loadDegrees();
+        loadMinors();
+        loadEmployment();
+        loadMap();
+        loadPeople();
+        loadResearch();
+        loadNews();
+        loadFooter();
+
 
     });
 
@@ -14,8 +24,12 @@
             var node = buildNode();
             node.add(json.title,'h2');
             node.add(json.description,'p');
-            node.add(json.quote,'p');
-            node.add(json.quoteAuthor,'p');
+
+            node.add(
+                  node.format(json.quote,'p','id="text"')
+                + node.format(json.quoteAuthor,'p','id="author"')
+                ,'div','class="quote"'
+            );
 
             $('#about').html(node.getHtml());
 
@@ -51,24 +65,6 @@
             var focuses  = 'concentrations';
             degrees.createList(focuses);
 
-            // build graduate section
-            degrees.add('Graduate:','h1');
-            degrees.createList(g_list);
-            $.each(grad, function(index, value) {
-
-                degrees.resetList(focuses);
-                $.each(value.concentrations,function (index, value) {
-                    degrees.addToList(focuses, degrees.format(value,'p'),'li');
-                });
-
-                degrees.addToList(g_list,
-                      degrees.format(value.title,'p')
-                    + degrees.format(value.degreeName,'p')
-                    + degrees.format(value.description,'p')
-                    + degrees.listToHtml(focuses,'ul')
-                    ,'li');
-            });
-            degrees.add( degrees.listToHtml(g_list,'ul'), 'div');
 
             // undergraduate section
             degrees.add('Undergraduate:','h1');
@@ -89,6 +85,26 @@
 
             });
             degrees.add( degrees.listToHtml(u_list,'ul'), 'div');
+
+
+            // build graduate section
+            degrees.add('Graduate:','h1');
+            degrees.createList(g_list);
+            $.each(grad, function(index, value) {
+
+                degrees.resetList(focuses);
+                $.each(value.concentrations,function (index, value) {
+                    degrees.addToList(focuses, degrees.format(value,'p'),'li');
+                });
+
+                degrees.addToList(g_list,
+                    degrees.format(value.title,'p')
+                    + degrees.format(value.degreeName,'p')
+                    + degrees.format(value.description,'p')
+                    + degrees.listToHtml(focuses,'ul')
+                    ,'li');
+            });
+            degrees.add( degrees.listToHtml(g_list,'ul'), 'div');
 
 
 
@@ -537,9 +553,12 @@
 
 
     function loadMap() {
-        myHTMLxhr('get', {path: '/map/'}, "#map").done(function (html) {
-            $('#map').html(html);
-        });
+
+        var map_node = buildNode();
+        map_node.add('','iframe','src="https://ist.rit.edu/api/map/"width="100%" height="600px"');
+
+        $('#map').html(map_node.getHtml());
+
     }
 
 
