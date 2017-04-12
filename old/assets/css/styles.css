@@ -1,0 +1,137 @@
+                                    /*       top level html  css          */
+
+
+main {
+    min-width: 800px;
+    max-width: 960px;
+    width: 50%;
+    margin: auto;
+
+}
+/*section {*/
+    /*border: 1px solid black;*/
+    /*margin-bottom: 20px;*/
+    /*opacity: 0;*/
+
+    /*padding: 15px;*/
+/*}*/
+
+
+
+                                        /*       About content css          */
+#about .quote {
+    width: 100%;
+    width: 70%;
+    margin: auto;
+}
+#about #author {
+    color: orange;
+}
+
+
+
+.navigation{
+    height: 70px;
+    background: black;
+    z-index: 999;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    overflow: hidden;
+    border-bottom: 6px solid #ef8d22;
+}
+.navigation h1 {
+    color: #ef8d22;
+    margin:20px;
+}
+
+/* ============================================================
+                          Parallax css
+============================================================ */
+
+
+/* colors */
+.white{
+    background-color: white;
+}
+.lightblue {
+    background-color: lightblue;
+}
+.black{
+    background-color: black;
+}
+
+/* parallax css */
+section{
+    opacity: 0;
+    border: 1px solid black;
+}
+section:last-child {
+    margin-bottom: 0;
+}
+section h2 {
+    font-family: "Roboto Slab", serif;
+    font-size: 30px;
+}
+section p {
+    /*margin-bottom: 40px;*/
+    /*font-size: 16px;*/
+    font-weight: 300;
+}
+section p:last-child {
+    margin-bottom: 0;
+}
+section.content {
+    padding: 10px 0;
+}
+section.parallax {
+    /*padding: 0 0;*/
+    /*background-position: 0 0;*/
+}
+section.parallax h1 {
+    color: #1e1e1e;
+    font-size: 48px;
+    line-height: 1;
+    font-weight: 700;
+    text-align: center;
+    text-transform: uppercase;
+    text-shadow: 0 0 10px white;
+}
+section.banner {
+    margin-top: 70px;
+    background-image: url(../images/new_zealand.jpg);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100%;
+    height: 350px;
+}
+
+section.other1 {
+    background-image: url(../images/new_zealand.jpg);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100%;
+    height: 350px;
+}
+
+@media all and (min-width: 600px) {
+    section h2 {
+        /*font-size: 42px;*/
+    }
+    /*section p {*/
+    /*font-size: 20px;*/
+    /*}*/
+    section.parallax {
+        padding: 0px;
+    }
+    section.parallax h1 {
+        font-size: 96px;
+    }
+}
+@media all and (min-width: 960px) {
+    section.parallax h1 {
+        font-size: 160px;
+    }
+}
+
+

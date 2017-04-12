@@ -1,0 +1,80 @@
+                                    /*       top level html  css          */
+
+body {
+    color: #505050;
+    font-family: "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+}
+.spacer{
+    height: 67px;
+}
+
+                                    /*      Container Css       */
+
+.navigation{
+    height: 70px;
+    background: black;
+    z-index: 999;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    overflow: hidden;
+    border-bottom: 6px solid #ef8d22;
+}
+.navigation h1 {
+    color: #ef8d22;
+    margin:20px;
+}
+
+#banner-title{
+    font-size: 60pt;
+}
+
+
+
+/*  Container css */
+.container {
+    opacity: 0;
+}
+.container section{
+    margin: auto;
+    max-width: 960px;
+    min-width: 800px;
+    width: 70%;
+}
+
+
+                                    /*       About content css          */
+#about .quote {
+    width: 70%;
+    margin: auto;
+}
+#text {
+    font-style: italic;
+}
+#about #author {
+    color: orange;
+}
+
+
+
+/* degree section css*/
+.section-title {
+    font-size: 40pt;
+}
+.degree-div {
+    padding: 20px;
+    width: 27%;
+    margin: 5px;
+}
+.degree-div h3{
+    font-size: 20pt;
+    margin-bottom: 50px;
+}
+section ul li {
+    float: left;
+}
+.no-bullets ul {
+    list-style-type: none;
+}
