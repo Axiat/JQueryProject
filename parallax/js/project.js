@@ -12,11 +12,14 @@
         loadPeople();
         loadResearch();
         loadNews();
+        loadResources();
         loadFooter();
 
 
     });
 
+    var research = {}; // username => content
+    var minors_dict = {}; //minor_id => details
 
     function loadAbout() {
         myXhr('get',{path:'/about/'},'#about').done(function(json){
@@ -41,8 +44,9 @@
             // do something...
             var node = buildNode();
             $.each(json.faculty,function(i, item){
-                node.addRaw( '<div onclick="getFac(this)" data-username="'+item.username+'">' );
-                node.addRaw( '<h2>'+item.name+'</h2><p>'+item.tagline+'</p>' );
+
+                node.addRaw( '<div class="person-wrapper" onclick="getFac(this)" data-username="'+item.username+'">' );
+                node.addRaw( '<h2>'+item.name+'</h2>' ); //<p>'+item.tagline+'</p>
                 node.addRaw( '<img src="'+item.imagePath+'"/></div>' );
             });
             $('#people').html(node.getHtml());
@@ -50,15 +54,45 @@
     }
 
 
+function getFac(dom){
+    myXhr('get',{path:'/people/faculty/username='+$(dom).attr('data-username')},null).done(function(json){
+        console.log(json);
+
+
+        var info = buildNode();
+
+        info.add(json.name,'h1');
+        info.add(json.title,'h3');
+        info.add('','img','src="'+json.imagePath+'" style="border-radius: 5px"');
+        info.add( info.format('Email: ','b') + json.email,'p');
+        info.add( info.format('Office: ','b') + json.office,'p');
+        info.add( info.format('Phone: ','b') + json.phone,'p');
+        info.add( info.format('Website: ','b') + info.format(json.website,'a','href="' + json.website + '"') ,'p');
+
+
+        swal({
+            html: info.getHtml(),
+            showCloseButton: true,
+            showConfirmButton:false
+        })
+
+    });
+}
+
+
     function loadDegrees() {
         myXhr('get',{path:'/degrees/'},'#degrees').done(function (json) {
-            console.log(json);
+
             var grad  = json.graduate;
             var under = json.undergraduate;
 
             var g_list = 'grad';
             var u_list = 'under';
 
+            var li_style = 'style="' +
+                'font-size:15pt; ' +
+                'margin-bottom: 5px;' +
+                '"';
             var degrees = buildNode();
 
             // this list is reused between both lists
@@ -73,7 +107,7 @@
 
                 degrees.resetList(focuses);
                 $.each(value.concentrations,function (index, value) {
-                    degrees.addToList(focuses, degrees.format(value,'p'),'li');
+                    degrees.addToList(focuses, degrees.format(value,'b'),'li',li_style);
                 });
 
                 degrees.addToList(u_list,
@@ -94,9 +128,9 @@
             $.each(grad, function(index, value) {
 
                 degrees.resetList(focuses);
-                degrees.addToList(focuses,'Focuses:','p','style="bold"');
+                // degrees.addToList(focuses,'Focuses:','p','style="bold"');
                 $.each(value.concentrations,function (index, value) {
-                    degrees.addToList(focuses, degrees.format(value,'p'),'li');
+                    degrees.addToList(focuses, degrees.format(value,'b'),'li',li_style);
                 });
 
 
@@ -124,23 +158,45 @@
             minors.createList(course_list);
             $.each(json.UgMinors,function (index, value) {
                 var courses = value.courses;
-                minors.add(value.name,'p');
-                minors.add(value.title,'p');
-                minors.add(value.description,'p');
-                minors.add(value.note,'p');
+                //minors.add(value.name,'p');
+                minors.add(value.title,'h3', 'class="minors" id="'+ value.name +'"' +'onclick="minorsPopup(this);"');
+                // minors.add(value.description,'p');
+                // minors.add(value.note,'p');
 
                 // add up courses
                 minors.resetList(course_list);
                 $.each(courses,function (index, value) {
                    minors.addToList(course_list,value,'li')
                 });
-                minors.add( minors.listToHtml(course_list,'ul'), 'div');
+                //minors.add( minors.listToHtml(course_list,'ul'), 'div');
 
-
+                minors_dict[value.name] =
+                    minors.format(value.title,'h1') +
+                    minors.format('Description','h2','style="text-align: center;"')+
+                    minors.format(value.description,'p') +
+                    minors.format('Note','h2','style="text-align: center;"') +
+                    minors.format(value.note,'p') +
+                    minors.format('Courses','h2','style="text-align: center;"') +
+                    minors.format( minors.listToHtml(course_list,'ul', 'style=" list-style-type: none; text-align: center;"'), 'div');
             });
+
+            console.log(minors_dict);
 
             $('#minors').html(minors.getHtml());
         });
+    }
+
+    function minorsPopup(object) {
+        var info = buildNode();
+        info.addRaw(minors_dict[object.id]);
+
+        swal({
+            html: info.getHtml(),
+            showCloseButton: true,
+            showConfirmButton:false,
+            customClass: 'research-popup'
+        })
+
     }
 
     function loadEmployment() {
@@ -158,7 +214,7 @@
 
             // build introduction node;
             var intro_div = buildNode();
-            intro_div.add(introduction.title,'h2');
+            intro_div.add(introduction.title,'h1');
             $.each(introduction.content,function (index,value) {
                 intro_div.add(value.title,'h2');
                 intro_div.add(value.description,'p');
@@ -192,7 +248,7 @@
             employers_div.add(employers.title,'h2');
             employers_div.createList('employers');
             $.each(employers.employerNames,function (index, value) {
-              employers_div.addToList('employers', value,'li');
+              employers_div.addToList('employers', employers_div.format(value,'p'),'li');
             });
             employers_div.add( employers_div.listToHtml('employers','ul'), 'div' );
 
@@ -239,10 +295,14 @@
 
 
             // wrap and add child nodes
+            var employment_class = 'class="employment-info"';
             employment.add(intro_div.getHtml(),'div');
-            employment.add(careers_div.getHtml(),'div');
-            employment.add(stats_div.getHtml(),'div');
-            employment.add(employers_div.getHtml(),'div');
+            employment.add(careers_div.getHtml(),'div',employment_class);
+            employment.add(stats_div.getHtml(),'div',employment_class);
+            employment.add(employers_div.getHtml(),'div',employment_class);
+            employment.add('','div','style="clear:both;"'); // clear
+            employment.add('Coop Table','div','class="coop-table"');
+            employment.add('Employment Table','div','class="employment-table"');
             // employment.add(coop_div.getHtml(),'div');    // these two statements, load a LOT of html objects
             // employment.add(employ_table.getHtml(),'div');
 
@@ -260,13 +320,14 @@
             var c_intrest = 'intrest_citations';
 
             var research_div = buildNode();
+            research_div.add('Research By Faculty','h1','style="font-size: 45px;"');
             research_div.createList(c_faculty);
             // add up the byFacutly section
             $.each(byFaculty,function (index, value) {
 
                 // add faculty's name and username
-                research_div.add(value.facultyName,'b');
-                research_div.add(value.username,'p');
+                research_div.add(value.facultyName,'h3','class="faculty-name"' + 'id="' + value.username +'"' + 'onclick="researchPopup(this);"');
+                // research_div.add(value.username,'p','style="display:none;"');
 
                 // add up citations
                 research_div.resetList(c_faculty);
@@ -274,30 +335,71 @@
                     research_div.addToList(c_faculty, research_div.format(value,'p'),'li');
                 });
 
+
                 // add citations
-                research_div.add( research_div.listToHtml(c_faculty,'ul') , 'div');
+                // research_div.add( research_div.listToHtml(c_faculty,'ul') , 'div');
+                research[value.username] = research_div.format(research_div.listToHtml(c_faculty,'ul') , 'div');
             });
 
+            research_div.add('','div','style="clear:both"');
 
+            research_div.add('Research By Intrest','h1','style="font-size: 45px;"');
             // add up the byIntrestArea section
             research_div.createList(c_intrest);
             $.each(byIntrest,function (index, value) {
-                research_div.add(value.areaName,'p');
+               // var background = 'background-color: #'+((1<<24)*Math.random()|0).toString(16);
+                research_div.add(value.areaName,'p','class="interest-area" onclick="intrestPopup(this);"'); //TODO: remove comment later
+
 
                 // add up citations
                 research_div.resetList(c_intrest);
                 $.each(value.citations,function (index, value) {
-                    research_div.addToList( c_intrest, research_div.format(value,'p') , 'li' );
+                    research_div.addToList( c_intrest, research_div.format(value,'p') , 'li' );//TODO: remove comment later
                 });
 
+
                 // add citations
-                research_div.add( research_div.listToHtml(c_intrest,'ul') , 'div');
+                //research_div.add( research_div.listToHtml(c_intrest,'ul') , 'div'); //TODO: remove comment later
+                research[value.areaName] = research_div.format(research_div.listToHtml(c_intrest,'ul') , 'div');
+
             });
 
             // add research_div content to the page
+
             $('#research').html(research_div.getHtml());
         });
 
+
+    }
+
+    function intrestPopup(object) {
+
+        var info = buildNode();
+        info.add(object.innerText,'h1');
+        info.addRaw(research[object.innerText]);
+
+        swal({
+            html: info.getHtml(),
+            showCloseButton: true,
+            showConfirmButton:false,
+            customClass: 'research-popup'
+        })
+
+    }
+
+
+    function researchPopup(object) {
+
+        var info = buildNode();
+        info.add(object.innerText,'h1');
+        info.addRaw(research[object.id]);
+
+        swal({
+            html: info.getHtml(),
+            showCloseButton: true,
+            showConfirmButton:false,
+            customClass: 'research-popup'
+        })
 
     }
 
@@ -320,29 +422,39 @@
             // build root node
             var resources = buildNode();
 
-            // student resources title
+
+            var section = buildNode();
+
+           // student resources title
             resources.add(title,'h1');
             resources.add(sub_title,'h2');
 
+
             // tutoring information
-            resources.add(tutors.title,'p');
-            resources.add(tutors.description,'p');
-            resources.add(tutors.tutoringLabHoursLink,'p');
+            section.add(tutors.title,'p');
+            section.add(tutors.description,'p');
+            section.add(tutors.tutoringLabHoursLink,'p');
+
+            $('#tutor-info').html(section.getHtml());
+            section.resetContent();
+
 
             // study abroad section
-            resources.add(abroad.title,'p');
-            resources.add(abroad.description,'p');
+            section.add(abroad.title,'p');
+            section.add(abroad.description,'p');
 
             var places_list = 'places';
-            resources.createList(places_list);
+            section.createList(places_list);
             $.each(abroad.places,function (index, value) {
-                resources.addToList(places_list,
-                      resources.format(value.nameOfPlace,'p')
-                    + resources.format(value.description,'p')
+                section.addToList(places_list,
+                    section.format(value.nameOfPlace,'p')
+                    + section.format(value.description,'p')
                     , 'li');
             });
             // add places list to resources
-            resources.add( resources.listToHtml(places_list,'ul'), 'div');
+            section.add( section.listToHtml(places_list,'ul'), 'div');
+            $('#study-abroad').html(section.getHtml());
+            section.resetContent();
 
 
             // student services section
@@ -352,87 +464,94 @@
             var ist_advisors = services.istMinorAdvising;
             var pro_advisors = services.professonalAdvisors;
 
-            resources.add(aca_advisors.title,'p');
-            resources.add(aca_advisors.description,'p');
+            section.add(aca_advisors.title,'p');
+            section.add(aca_advisors.description,'p');
 
-            resources.add('FAQ','h2');
-            resources.add(aca_advisors.faq.title,'p');
-            resources.add(aca_advisors.faq.contentHref,'a','href="' + aca_advisors.faq.contentHref + '"');
+            section.add('FAQ','h2');
+            section.add(aca_advisors.faq.title,'p');
+            section.add(aca_advisors.faq.contentHref,'a','href="' + aca_advisors.faq.contentHref + '"');
 
-            resources.add(fac_advisors.title,'h2');
-            resources.add(fac_advisors.description,'p');
+            section.add(fac_advisors.title,'h2');
+            section.add(fac_advisors.description,'p');
 
             var adv_list = 'advisors';
-            resources.createList(adv_list);
-            resources.add(ist_advisors.title,'h2');
+            section.createList(adv_list);
+            section.add(ist_advisors.title,'h2');
             $.each(ist_advisors.minorAdvisorInformation,function (index, value) {
-                resources.addToList(adv_list,
-                      resources.format(value.title,'p')
-                    + resources.format(value.advisor,'p')
-                    + resources.format(value.email,'p')
+                section.addToList(adv_list,
+                    section.format(value.title,'p')
+                    + section.format(value.advisor,'p')
+                    + section.format(value.email,'p')
                     , 'li');
             });
-            resources.add( resources.listToHtml(adv_list,'ul'), 'div' );
+            section.add( section.listToHtml(adv_list,'ul'), 'div' );
+
+
 
             var pro_list = 'pro';
-            resources.createList(pro_list);
-            resources.add(pro_advisors.title,'h2');
+            section.createList(pro_list);
+            section.add(pro_advisors.title,'h2');
             $.each(pro_advisors.advisorInformation,function (index, value) {
-                resources.addToList(pro_list,
-                      resources.format(value.name,'p')
-                    + resources.format(value.department,'p')
-                    + resources.format(value.email,'p')
+                section.addToList(pro_list,
+                    section.format(value.name,'p')
+                    + section.format(value.department,'p')
+                    + section.format(value.email,'p')
                     , 'li');
             });
-            resources.add( resources.listToHtml(pro_list,'ul'), 'div' );
+            section.add( section.listToHtml(pro_list,'ul'), 'div' );
 
+            $('#advising-info').html(section.getHtml());
+            section.resetContent();
 
             // student ambassador section
-            resources.add(ambassadors.title,'h2');
-            resources.add('','img','src="' + ambassadors.ambassadorsImageSource + '"');
+            section.add(ambassadors.title,'h2');
+            section.add('','img','src="' + ambassadors.ambassadorsImageSource + '"');
 
             var amb_list = 'amb_list';
-            resources.createList(amb_list);
+            section.createList(amb_list);
             $.each(ambassadors.subSectionContent,function (index, value) {
-                resources.addToList(amb_list,
-                      resources.format(value.title,'p')
-                    + resources.format(value.description,'p')
+                section.addToList(amb_list,
+                    section.format(value.title,'p')
+                    + section.format(value.description,'p')
                     , 'li');
             });
-            resources.add( resources.listToHtml(amb_list,'ul'), 'div' );
+            section.add( resources.listToHtml(amb_list,'ul'), 'div' );
 
-            resources.add('RIT ambassador application','h3');
-            resources.add(ambassadors.applicationFormLink,'a', 'href="' + ambassadors.applicationFormLink + '"' );
-            resources.add('Contact','h3');
-            resources.add(ambassadors.note,'p');
+            section.add('RIT ambassador application','h3');
+            section.add(ambassadors.applicationFormLink,'a', 'href="' + ambassadors.applicationFormLink + '"' );
+            section.add('Contact','h3');
+            section.add(ambassadors.note,'p');
 
-
+            $('#ambassador-info').html(section.getHtml());
+            section.resetContent();
 
             // forms section
-            resources.add('Forms','h3');
+            section.add('Forms','h3');
             var grad_list  = 'graduate';
             var ugrad_list = 'undergrad';
 
-            resources.add('Graduate','h3');
-            resources.createList(grad_list);
+            section.add('Graduate','h3');
+            section.createList(grad_list);
             $.each(forms.graduateForms,function (index, value) {
-                resources.addToList(grad_list,
-                      resources.format(value.formName,'p')
-                    + resources.format(value.href,'a','href="' + value.href + '"')
+                section.addToList(grad_list,
+                    section.format(value.formName,'p')
+                    + section.format(value.href,'a','href="' + value.href + '"')
                     , 'li');
             });
-            resources.add( resources.listToHtml(grad_list,'ul'), 'div' );
+            section.add( section.listToHtml(grad_list,'ul'), 'div' );
 
-            resources.add('Undergrad','h3');
-            resources.createList(ugrad_list);
+            section.add('Undergrad','h3');
+            section.createList(ugrad_list);
             $.each(forms.undergraduateForms,function (index, value) {
-                resources.addToList(ugrad_list,
-                      resources.format(value.formName,'p')
-                    + resources.format(value.href,'a','href="' + value.href + '"')
+                section.addToList(ugrad_list,
+                    section.format(value.formName,'p')
+                    + section.format(value.href,'a','href="' + value.href + '"')
                     , 'li');
             });
-            resources.add( resources.listToHtml(ugrad_list,'ul'), 'div' );
+            section.add( section.listToHtml(ugrad_list,'ul'), 'div' );
 
+            $('#form-info').html(section.getHtml());
+            section.resetContent();
 
             // coop section
 
@@ -449,7 +568,7 @@
             });
             resources.add( resources.listToHtml(enroll_list,'ul'), 'div' );
 
-
+            // resources.add(accordion.getHtml(),'div','class="accordion"');
             $('#resources').html(resources.getHtml());
         });
     }
@@ -458,7 +577,7 @@
     function loadNews() {
         myXhr('get', {path: '/news/'}, "#news").done(function (json) {
 
-            console.log(json);
+            // console.log(json);
 
             // getting the values
             var older_array     = json.older;
@@ -509,7 +628,7 @@
 
     function loadFooter() {
         myXhr('get', {path: '/footer/'}, "#footer").done(function (json) {
-            console.log(json);
+            // console.log(json);
 
             var copyright = json.copyright;
             var links     = json.quickLinks;
@@ -565,11 +684,6 @@
     }
 
 
-    function getFac(dom){
-        myXhr('get',{path:'/people/faculty/username='+$(dom).attr('data-username')},null).done(function(json){
-            console.log(json);
-        });
-    }
 ///////////////////////////////////////////////////
 //utilities...
 //data - {path:'/about/'}

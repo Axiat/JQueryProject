@@ -2,18 +2,20 @@
                           Parallax css
 ============================================================ */
 
-
+.module.content{
+  opacity: 0;
+}
 section.module:last-child {
   margin-bottom: 0;
 }
 section.module h2 {
   margin-bottom: 40px;
   font-family: "Roboto Slab", serif;
-  font-size: 30px;
+  /*font-size: 30px;*/
 }
 section.module p {
-  margin-bottom: 40px;
-  font-size: 16px;
+  margin-bottom: 15px;
+  font-size: 20px;
   font-weight: 300;
 }
 section.module p:last-child {
@@ -40,6 +42,20 @@ section.module.parallax h1 {
   text-transform: uppercase;
   text-shadow: 0 0 10px white;
 }
+section.module.parallax h2 {
+  color: #1e1e1e;
+  font-size: 83px;
+  line-height: 1;
+  font-weight: 700;
+  text-align: center;
+  text-transform: uppercase;
+  text-shadow: 0 0 10px white;
+}
+section.module.parallax p{
+  color: #1e1e1e;
+  text-align: center;
+}
+
 section.module.parallax-1 {
   background-image: url("../img/demo/pattern1.png");
 }
@@ -51,12 +67,9 @@ section.module.parallax-3 {
 }
 
 @media all and (min-width: 600px) {
-  section.module h2 {
-    font-size: 42px;
-  }
-  section.module p {
-    font-size: 20px;
-  }
+  /*section.module p {*/
+    /*font-size: 20px;*/
+  /*}*/
   section.module.parallax {
     padding: 50px 0;
   }

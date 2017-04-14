@@ -6,6 +6,13 @@
 $(document).ready(function() {
      loadParallaxEffect();
 
+    // don't allow scrolling on map
+    var map = $('iframe');
+    map.attr('scrolling','no');
+    map.attr('border','none');
+
+
+    $( ".accordion" ).accordion();
 
 
 
@@ -61,12 +68,12 @@ $(window).on("load",function() {
     var every_other = true;
     $(window).scroll(function() {
         var windowBottom = $(this).scrollTop() + $(this).innerHeight();
-        $(".container").each(function() {
+        $(".module.content").each(function() {
             /* Check the location of each desired element */
             var objectBottom = $(this).offset().top + $(this).outerHeight();
 
             /* If the element is completely within bounds of the window, fade it in */
-            if (objectBottom < windowBottom) { //object comes into view (scrolling down)
+            if (objectBottom/1.5 < windowBottom) { //object comes into view (scrolling down)
                 if ($(this).css("opacity")==0) {
                     $(this).fadeTo(500,1);
                 }
@@ -75,5 +82,16 @@ $(window).on("load",function() {
         });
     }).scroll(); //invoke scroll-handler on page-load
 });
+
+
+$('.person-wrapper').matchHeight(
+    {
+        byRow: true,
+        property: 'height',
+        target: null,
+        remove: false
+    }
+);
+
 
 

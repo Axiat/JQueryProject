@@ -189,6 +189,9 @@ function buildNode() {
         nullCheck: function (input) {
           return input !== undefined && input !== null && input !== "undefined" && input !== "null";
         },
+        resetContent: function () {
+          this.content = "";
+        },
         // return the content
         getHtml: function () {
             return this.content;

@@ -24,6 +24,20 @@
   <!-- ScrollMe plugin-->
   <script src="plugins/scrollme/jquery.scrollme.min.js"></script>
 
+  <!-- Match height plugin -->
+  <script src="plugins/match-height/jquery.matchHeight-min.js" type="text/javascript"></script>
+
+  <!-- swee alert plugin -->
+  <link rel="stylesheet" type="text/css" href="plugins/sweetalert/sweetalert2.min.css">
+  <script src="plugins/sweetalert/sweetalert2.min.js"></script>
+
+  <!-- Jquery UI -->
+  <script src="plugins/jquery-ui-1.12.1/jquery-ui.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="plugins/jquery-ui-1.12.1/jquery-ui.min.css">
+  <link rel="stylesheet" type="text/css" href="plugins/jquery-ui-1.12.1/jquery-ui.structure.min.css">
+  <link rel="stylesheet" type="text/css" href="plugins/jquery-ui-1.12.1/jquery-ui.theme.min.css">
+
+
   <!-- the project js file -->
   <script src="js/buildNode.js"></script>
   <script src="js/project.js"></script>
@@ -48,6 +62,7 @@
 
   <main>
     <div class="spacer"></div>
+
       
       <section class="module parallax parallax-1">
         <div class="container">
@@ -59,7 +74,7 @@
       <section class="module content">
       
         <div class="container" style="overflow: hidden">
-          <section id="about"></section>
+          <section id="about" class="load-js"></section>
           <div style="clear: both;"></div>
         </div>
 
@@ -73,42 +88,156 @@
 
       <section class="module content">
         <div class="container">
-          <section id="degrees"></section>
-
+          <section id="degrees"></section>            <!-- Degrees -->
           <div style="clear: both;"></div>
-          <!--<section id="minors"></section>-->
-          <!--<section id="employment"></section>-->
-          <!--<section id="map"></section>-->
-
         </div>
       </section>
 
+
+    <section class="module parallax parallax-1">        <!-- Map -->
+      <div class="container">
+        <h2>Where Our Students Work</h2>
+        <p>Click a marker to learn more about the jobs at that location</p>
+        <section id="map"></section>
+      </div>
+    </section>
+
+
+    <section class="module content">
+      <div class="container">
+        <section id="employment"></section>         <!-- Employment -->
+        <div style="clear: both;"></div>
+      </div>
+    </section>
+
+
       <section class="module parallax parallax-3">
         <div class="container">
-          <h1>Colour</h1>
+          <h1>Faculty</h1>
         </div>
       </section>
 
       <section class="module content">
         <div class="container">
-          <section id="people"></section>
-          <section id="research"></section>
-          <section id="resources"></section>
-          <section id="news"></section>
-          <div id="course"></div>
+          <section id="people" ></section>              <!-- Faculty -->
+          <div style="clear: both;"></div>
         </div>
       </section>
 
+    <section class="module parallax parallax-3">
+      <div class="container">
+        <h1>Research</h1>
+      </div>
+    </section>
+
+    <section class="module content">
+      <div class="container">
+        <section id="research"></section>               <!-- Research -->
+        <div style="clear: both;"></div>
+      </div>
+    </section>
+
+
+    <section class="module parallax parallax-3">
+      <div class="container">
+        <h1>Minors</h1>
+      </div>
+    </section>
+
+
+    <section class="module content">                    <!-- Minors -->
+      <div class="container">
+        <section id="minors"></section>
+        <div style="clear: both;"></div>
+      </div>
+    </section>
+
+
+    <section class="module parallax parallax-3">
+      <div class="container">
+        <h1>Resources</h1>
+      </div>
+    </section>
+
+
+    <section class="module content">                    <!-- Resources -->
+      <div class="container">
+
+        <div class="accordion">
+          <h3>Tutoring Information</h3>
+          <div>
+            <p>
+              <p id="tutor-info"></p>
+            </p>
+          </div>
+          <h3>Study Abroad</h3>
+          <div>
+            <p>
+              <p id="study-abroad"></p>
+            </p>
+          </div>
+          <h3>Advising</h3>
+          <div>
+            <p>
+              <p id="advising-info">
+            </p>
+          </div>
+          <h3>Student Ambassador Information & Application</h3>
+          <div>
+            <p>
+              <p id="ambassador-info">
+            </p>
+          </div>
+          <h3>Forms</h3>
+          <div>
+            <p>
+            <p id="form-info">
+            </p>
+          </div>
+        </div>
+
+
+
+        <section id="resources"></section>
+        <div style="clear: both;"></div>
+      </div>
+    </section>
+
+    <!--<section class="module parallax parallax-3">-->
+      <!--<div class="container">-->
+        <!--<h1>News</h1>-->
+      <!--</div>-->
+    <!--</section>-->
+
+
+    <!--<section class="module content">                    &lt;!&ndash; News &ndash;&gt;-->
+      <!--<div class="container">-->
+        <!--<section id="news"></section>-->
+        <!--<div style="clear: both;"></div>-->
+      <!--</div>-->
+    <!--</section>-->
+
+
+
+
+
+
+
+
+    <!--<div id="course"></div>-->
+
   </main><!-- /main -->
 
-  <footer>
-    <div class="container">
-      <section id="footer"></section>
-    </div>
-  </footer><!-- /footer -->
+
+    <footer>
+      <div class="container">
+        <section id="footer"></section>
+      </div>
+    </footer><!-- /footer -->
+
+
   
 </div><!-- /#wrapper -->
-
 <!-- js -->
 <script src="js/animation-calls.js"></script>
 
