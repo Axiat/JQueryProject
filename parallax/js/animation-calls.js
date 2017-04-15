@@ -12,7 +12,10 @@ $(document).ready(function() {
     map.attr('border','none');
 
 
-    $( ".accordion" ).accordion();
+    $( ".accordion" ).accordion({
+        collapsible: true,
+        heightStyle: 'content'
+    });
 
 
 

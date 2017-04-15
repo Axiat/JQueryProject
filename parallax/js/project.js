@@ -199,6 +199,10 @@ function getFac(dom){
 
     }
 
+
+    var coop_table = '';
+    var employment_table = '';
+
     function loadEmployment() {
         myXhr('get',{path:'/employment/'},"#employment").done(function (json) {
             var employment = buildNode();
@@ -261,16 +265,25 @@ function getFac(dom){
             var coop_array  = coopTable.coopInformation;
             var coop_length = coop_array.length;
 
+            // add headers
+            coop_div.addToList('co-ops',
+                coop_div.format('Degree','th') +
+                coop_div.format('Employer','th') +
+                coop_div.format('Location','th') +
+                coop_div.format('Term','th')
+                ,'tr');
+
+            // add contents of table
             for( var i = 0; i < coop_length; i++ ){
                 var object = coop_array[i];
                 coop_div.addToList('co-ops',
-                      coop_div.format(object.city,'p')
-                    + coop_div.format(object.degree,'p')
-                    + coop_div.format(object.employer,'p')
-                    + coop_div.format(object.term,'p')
-                    ,'li');
+                      coop_div.format(object.degree,'td')
+                    + coop_div.format(object.employer,'td')
+                    + coop_div.format(object.city,'td')
+                    + coop_div.format(object.term,'td')
+                    ,'tr');
             }
-            coop_div.add( coop_div.listToHtml('co-ops','ul'), 'div' );
+            coop_div.add( coop_div.listToHtml('co-ops','table'), 'div', 'class="big-table"' );
 
 
             // build employment table
@@ -281,17 +294,28 @@ function getFac(dom){
             var employ_array  = employTable.professionalEmploymentInformation;
             var employ_length = employ_array.length;
 
+            // add headers
+            employ_table.addToList('table',
+                employ_table.format('Degree','th') +
+                employ_table.format('Employer','th') +
+                employ_table.format('Location','th') +
+                employ_table.format('Title','th') +
+                employ_table.format('Start Date','th')
+            ,'tr');
+
+
+            // add content of table
             for( var i = 0; i < employ_length; i++ ){
                 var object = employ_array[i];
                 employ_table.addToList('table',
-                      employ_table.format(object.title,'p')
-                    + employ_table.format(object.city,'p')
-                    + employ_table.format(object.degree,'p')
-                    + employ_table.format(object.employer,'p')
-                    + employ_table.format(object.startDate,'p')
-                    ,'li');
+                      employ_table.format(object.degree,'td')
+                    + employ_table.format(object.employer,'td')
+                    + employ_table.format(object.title,'td')
+                    + employ_table.format(object.city,'td')
+                    + employ_table.format(object.startDate,'td')
+                    ,'tr');
             }
-            employ_table.add( employ_table.listToHtml('table','ul'), 'div' );
+            employ_table.add( employ_table.listToHtml('table','table'), 'div' );
 
 
             // wrap and add child nodes
@@ -301,14 +325,39 @@ function getFac(dom){
             employment.add(stats_div.getHtml(),'div',employment_class);
             employment.add(employers_div.getHtml(),'div',employment_class);
             employment.add('','div','style="clear:both;"'); // clear
-            employment.add('Coop Table','div','class="coop-table"');
-            employment.add('Employment Table','div','class="employment-table"');
+            employment.add('Coop Table','div','class="coop-table" onclick="loadCoopTable()"');
+            employment.add('Employment Table','div','class="employment-table" onclick="loadEmploymentTable()"');
+
+            coop_table   = coop_div.getHtml();
+            employment_table = employ_table.getHtml();
+
+
             // employment.add(coop_div.getHtml(),'div');    // these two statements, load a LOT of html objects
             // employment.add(employ_table.getHtml(),'div');
 
             $('#employment').html(employment.getHtml());
         });
     }
+
+    function loadCoopTable(){
+
+        swal({
+            html: coop_table,
+            showCloseButton: true,
+            showConfirmButton:false,
+            customClass: 'table-popup'
+        })
+    }
+    function loadEmploymentTable(){
+
+        swal({
+            html: employment_table,
+            showCloseButton: true,
+            showConfirmButton:false,
+            customClass: 'table-popup'
+        })
+    }
+
 
     function loadResearch() {
         myXhr('get',{path:'/research/'},"#research").done(function (json) {
@@ -429,25 +478,27 @@ function getFac(dom){
             resources.add(title,'h1');
             resources.add(sub_title,'h2');
 
+            //$('#resources').html(resources.getHtml());
+
 
             // tutoring information
-            section.add(tutors.title,'p');
+            section.add(tutors.title,'h2');
             section.add(tutors.description,'p');
-            section.add(tutors.tutoringLabHoursLink,'p');
+            section.add(tutors.tutoringLabHoursLink,'a','href="' +tutors.tutoringLabHoursLink+ '"');
 
             $('#tutor-info').html(section.getHtml());
             section.resetContent();
 
 
             // study abroad section
-            section.add(abroad.title,'p');
+            section.add(abroad.title,'h2');
             section.add(abroad.description,'p');
 
             var places_list = 'places';
             section.createList(places_list);
             $.each(abroad.places,function (index, value) {
                 section.addToList(places_list,
-                    section.format(value.nameOfPlace,'p')
+                    section.format(value.nameOfPlace,'b')
                     + section.format(value.description,'p')
                     , 'li');
             });
@@ -458,17 +509,16 @@ function getFac(dom){
 
 
             // student services section
-            resources.add(services.title,'h2');
+            //resources.add(services.title,'h2');
             var aca_advisors = services.academicAdvisors;
             var fac_advisors = services.facultyAdvisors;
             var ist_advisors = services.istMinorAdvising;
             var pro_advisors = services.professonalAdvisors;
 
-            section.add(aca_advisors.title,'p');
+            section.add(aca_advisors.title,'h2');
             section.add(aca_advisors.description,'p');
 
-            section.add('FAQ','h2');
-            section.add(aca_advisors.faq.title,'p');
+            section.add(aca_advisors.faq.title,'h2');
             section.add(aca_advisors.faq.contentHref,'a','href="' + aca_advisors.faq.contentHref + '"');
 
             section.add(fac_advisors.title,'h2');
@@ -485,6 +535,7 @@ function getFac(dom){
                     , 'li');
             });
             section.add( section.listToHtml(adv_list,'ul'), 'div' );
+            section.add('','div','style="clear:both; margin-bottom: 75px;"');
 
 
 
@@ -515,10 +566,12 @@ function getFac(dom){
                     + section.format(value.description,'p')
                     , 'li');
             });
-            section.add( resources.listToHtml(amb_list,'ul'), 'div' );
+            section.add( section.listToHtml(amb_list,'ul'), 'div' );
+            section.add('','div','style="clear:both; margin-bottom: 75px;"');
+
 
             section.add('RIT ambassador application','h3');
-            section.add(ambassadors.applicationFormLink,'a', 'href="' + ambassadors.applicationFormLink + '"' );
+            section.add(ambassadors.applicationFormLink,'a', 'href="http://ist.rit.edu/' + ambassadors.applicationFormLink + '"' );
             section.add('Contact','h3');
             section.add(ambassadors.note,'p');
 
@@ -526,7 +579,6 @@ function getFac(dom){
             section.resetContent();
 
             // forms section
-            section.add('Forms','h3');
             var grad_list  = 'graduate';
             var ugrad_list = 'undergrad';
 
@@ -535,17 +587,18 @@ function getFac(dom){
             $.each(forms.graduateForms,function (index, value) {
                 section.addToList(grad_list,
                     section.format(value.formName,'p')
-                    + section.format(value.href,'a','href="' + value.href + '"')
+                    + section.format(value.formName,'a','href="http://ist.rit.edu/' + value.href + '"')
                     , 'li');
             });
             section.add( section.listToHtml(grad_list,'ul'), 'div' );
+            section.add('','div','style="clear:both; margin-bottom: 75px;"');
 
             section.add('Undergrad','h3');
             section.createList(ugrad_list);
             $.each(forms.undergraduateForms,function (index, value) {
                 section.addToList(ugrad_list,
                     section.format(value.formName,'p')
-                    + section.format(value.href,'a','href="' + value.href + '"')
+                    + section.format(value.href,'a','href="http://ist.rit.edu/' + value.href + '"')
                     , 'li');
             });
             section.add( section.listToHtml(ugrad_list,'ul'), 'div' );
@@ -554,25 +607,30 @@ function getFac(dom){
             section.resetContent();
 
             // coop section
-
-            resources.add(coops.title,'h2');
-            resources.add('RIT Job Zone','a','href="' + coops.RITJobZoneGuidelink + '"');
+            section.add(coops.title,'h2');
+            section.add('RIT Job Zone','a','href="' + coops.RITJobZoneGuidelink + '"');
 
             var enroll_list = 'enroll';
-            resources.createList(enroll_list);
+            section.createList(enroll_list);
             $.each(coops.enrollmentInformationContent,function (index, value) {
-                resources.addToList(enroll_list,
-                      resources.format(value.title,'p')
-                    + resources.format(value.description,'p')
+                section.addToList(enroll_list,
+                    section.format(value.title,'p')
+                    + section.format(value.description,'p')
                     , 'li');
             });
-            resources.add( resources.listToHtml(enroll_list,'ul'), 'div' );
+            section.add( section.listToHtml(enroll_list,'ul'), 'div' );
+            $('#coop-info').html(section.getHtml());
+            section.resetContent();
 
             // resources.add(accordion.getHtml(),'div','class="accordion"');
-            $('#resources').html(resources.getHtml());
+
         });
     }
 
+
+    var old_news = '';
+    var quarter_news = '';
+    var new_news = '';
 
     function loadNews() {
         myXhr('get', {path: '/news/'}, "#news").done(function (json) {
@@ -594,39 +652,74 @@ function getFac(dom){
             news.createList(old_list);
             $.each(older_array,function (index, value) {
                 news.addToList(old_list,
-                    news.format(value.title,'p')
-                  + news.format(value.date,'p')
+                    news.format(value.title,'h1')
+                  + news.format(value.date,'h2')
                   + news.format(value.description,'p')
-                  ,'li');
+                  ,'div');
             });
-            news.add( news.listToHtml(old_list,'ul'), 'div' );
+            // news.add( news.listToHtml(old_list,'div'), 'div' );
+            old_news = news.listToHtml(old_list,'div');
 
             news.createList(quarter_list);
             $.each(quarter_array,function (index, value) {
                 news.addToList(quarter_list,
-                      news.format(value.title,'p')
-                    + news.format(value.date,'p')
+                      news.format(value.title,'h1')
+                    + news.format(value.date,'h2')
                     + news.format(value.description,'p')
-                    ,'li');
+                    ,'div');
             });
-            news.add( news.listToHtml(quarter_list,'ul'), 'div' );
+            //news.add( news.listToHtml(quarter_list,'div'), 'div' );
+            quarter_news = news.listToHtml(quarter_list,'div');
 
             news.createList(year_list);
             $.each(year_array,function (index, value) {
                 news.addToList(year_list,
-                      news.format(value.title,'p')
-                    + news.format(value.date,'p')
+                      news.format(value.title,'h1')
+                    + news.format(value.date,'h2')
                     + news.format(value.description,'p')
-                    ,'li');
+                    ,'div');
             });
-            news.add( news.listToHtml(year_list,'ul'), 'div' );
+            //news.add( news.listToHtml(year_list,'div'), 'div' );
+            new_news =  news.listToHtml(year_list,'div');
 
 
-            $('#news').html(news.getHtml());
+            // $('#news').html(news.getHtml());
         });
     }
 
-    function loadFooter() {
+
+// load the news popup
+function oldNewsPopup() {
+
+    swal({
+        html: old_news,
+        showCloseButton: true,
+        showConfirmButton:false,
+        customClass: 'news-popup'
+    })
+
+}
+
+function quaterNewsPopup() {
+    swal({
+        html: quarter_news,
+        showCloseButton: true,
+        showConfirmButton:false,
+        customClass: 'news-popup'
+    })
+
+}
+function newNewsPopup() {
+    swal({
+        html: new_news,
+        showCloseButton: true,
+        showConfirmButton:false,
+        customClass: 'news-popup'
+    })
+}
+
+
+function loadFooter() {
         myXhr('get', {path: '/footer/'}, "#footer").done(function (json) {
             // console.log(json);
 
